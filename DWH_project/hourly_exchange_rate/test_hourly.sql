@@ -3,7 +3,7 @@ CREATE OR REPLACE PROCEDURE dev.usp_test_fxrate_hourly(p_currency_id smallint)
  SECURITY DEFINER
 AS $procedure$
 
-
+-- 1 month-1currency: 4m
 	
         declare
        		v_loop_count            int4;
@@ -58,15 +58,17 @@ AS $procedure$
               		RAISE NOTICE 'Time smallest  %',v_max_fx_hourly;
               	
               		
-              		v_loop_hour:=extract('hour' from v_max_fx_hourly)+1;
+              		
               	
 					loop
 						-- v_loop_time:= to_char(v_max_fx_hourly, 'YYYY-MM-DD')||  make_time(v_loop_hour,0,0);
 						
 						v_loop_time:= v_max_fx_hourly + interval '1 hour';
 						v_loop_time_timestamp:= v_loop_time::TIMESTAMP;
+						v_loop_hour:=extract('hour' from v_loop_time_timestamp);
 						RAISE NOTICE 'Time date  %',v_loop_time;
-						
+						if v_loop_hour=24 then v_loop_hour:=0; 
+						end if;
 										
 						insert into dev.fx_rate_hourly(currency_id,usdrate,capturedate,provider,created_date_id,capturehour_id,ctrl_last_update_ts)
 						select p_currency_id, --currency_id
@@ -76,16 +78,17 @@ AS $procedure$
 						to_char(v_loop_time_timestamp, 'YYYYMMDD')::int4, --created_date_id
 						v_loop_hour, --capturehour_id
 						now()::timestamp; --ctrl_last_update_ts
-									
+						
+						RAISE NOTICE 'hour: %',v_loop_hour;
+						
 						v_loop_hour := v_loop_hour + 1;
-						v_max_fx_hourly:= v_loop_time_timestamp;
-						if v_loop_hour >30
+						v_max_fx_hourly:= v_loop_time_timestamp; 
+						if v_max_fx_hourly >= '2018-02-20 00:00:00' 
 						then 
 							v_t02:=  CURRENT_TIMESTAMP;
 							v_t02:= v_t01::timestamp;
 				        	v_time_run:= DATE_PART('second', v_t02 - v_t01);	
-				        	RAISE NOTICE 'time run: %',v_time_run;
-				        	RAISE NOTICE 'hour: %',v_loop_hour;
+				        	RAISE NOTICE 'time run: %',v_time_run*100;
 							return;
 									
 						end if;
