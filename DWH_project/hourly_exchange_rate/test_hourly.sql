@@ -6,9 +6,11 @@ AS $procedure$
 -- 1 month-1currency: 4m
 	
         declare
-       		v_loop_count            int4;
-       		v_loop_hour            int4;
-            v_loop_time             varchar(150);
+       		v_loop_count				int4;
+       		v_loop_hour					int4;
+            --v_loop_time             varchar(150);
+            p_currency_id				smallint;
+       		
 			v_loop_time_timestamp		TIMESTAMP WITHOUT time zone;
            	v_t01						TIMESTAMP WITHOUT time zone;
            	v_t02						TIMESTAMP WITHOUT time zone;
@@ -26,11 +28,15 @@ AS $procedure$
 		BEGIN
 				v_t01:= CURRENT_TIMESTAMP;
 				v_t01:= v_t01::timestamp;
+			
 				
+				p_currency_id:= 20;
+			
 				SELECT max(capturedate) INTO v_max_fx_hourly 
 				FROM dev.fx_rate_hourly 
 				where currency_id =  p_currency_id
 				group by currency_id ; 
+				v_max_fx_hourly:= '2018-01-01 00:00:00'::timestamp;
 			
 				SELECT MAX(created_at)+ (40 * INTERVAL '1 minute') INTO v_cer_max_dt 
                 FROM edw_fact.cer01_currency_exchange_rate_t cer;--max created date from currency exchange
@@ -63,10 +69,10 @@ AS $procedure$
 					loop
 						-- v_loop_time:= to_char(v_max_fx_hourly, 'YYYY-MM-DD')||  make_time(v_loop_hour,0,0);
 						
-						v_loop_time:= v_max_fx_hourly + interval '1 hour';
-						v_loop_time_timestamp:= v_loop_time::TIMESTAMP;
+						v_loop_time_timestamp:= v_max_fx_hourly + interval '1 hour';
+						--v_loop_time_timestamp:= v_loop_time::TIMESTAMP;
 						v_loop_hour:=extract('hour' from v_loop_time_timestamp);
-						RAISE NOTICE 'Time date  %',v_loop_time;
+						RAISE NOTICE 'Time date  %',v_loop_time_timestamp;
 						if v_loop_hour=24 then v_loop_hour:=0; 
 						end if;
 										
@@ -83,11 +89,11 @@ AS $procedure$
 						
 						v_loop_hour := v_loop_hour + 1;
 						v_max_fx_hourly:= v_loop_time_timestamp; 
-						if v_max_fx_hourly >= '2018-02-20 00:00:00' 
+						if v_max_fx_hourly >= '2018-03-05 00:00:00' 
 						then 
 							v_t02:=  CURRENT_TIMESTAMP;
-							v_t02:= v_t01::timestamp;
-				        	v_time_run:= DATE_PART('second', v_t02 - v_t01);	
+							v_t02:= v_t02::timestamp;
+				        	v_time_run:= EXTRACT(EPOCH FROM (v_t02 - v_t01));
 				        	RAISE NOTICE 'time run: %',v_time_run*100;
 							return;
 									
