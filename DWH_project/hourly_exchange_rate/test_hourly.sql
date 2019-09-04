@@ -7,6 +7,7 @@ AS $procedure$
 	
         declare
        		v_loop_count            int4;
+       		v_loop_hour            int4;
             v_loop_time             varchar(150);
 			v_loop_time_timestamp		TIMESTAMP WITHOUT time zone;
            	v_t01						TIMESTAMP WITHOUT time zone;
@@ -26,7 +27,7 @@ AS $procedure$
 				v_t01:= CURRENT_TIMESTAMP;
 				v_t01:= v_t01::timestamp;
 				
-				SELECT max(created_date_id) INTO v_max_fx_hourly 
+				SELECT max(capturedate) INTO v_max_fx_hourly 
 				FROM dev.fx_rate_hourly 
 				where currency_id =  p_currency_id
 				group by currency_id ; 
@@ -46,51 +47,54 @@ AS $procedure$
    				RAISE NOTICE 'Ext max date %',v_ext_fx_dt;
    	
    	
-              	if v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
-              	then
-              		RAISE NOTICE 'Time smallest  %',v_max_fx_hourly;
-              		RAISE NOTICE 'Batch inserted to hold table %';
-              	end if;
+              	--if v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
+              	--then
+              	--	RAISE NOTICE 'Time smallest  %',v_max_fx_hourly;
+              	--	RAISE NOTICE 'Batch inserted to hold table %';
+              	--end if;
               	
               	if v_max_fx_hourly <= (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
               	then
               		RAISE NOTICE 'Time smallest  %',v_max_fx_hourly;
-              	end if;
-                
-				v_loop_count:=0;
-	          	if v_loop_count <= 23
-							THEN 
-								loop
-										v_loop_time:= '2018-01-03 '||  make_time(v_loop_count,0,0);
-										RAISE NOTICE 'Time date  %',v_loop_time;
-										v_loop_time_timestamp:= v_loop_time::TIMESTAMP;
+              	
+              		
+              		v_loop_hour:=extract('hour' from v_max_fx_hourly)+1;
+              	
+					loop
+						-- v_loop_time:= to_char(v_max_fx_hourly, 'YYYY-MM-DD')||  make_time(v_loop_hour,0,0);
+						
+						v_loop_time:= v_max_fx_hourly + interval '1 hour';
+						v_loop_time_timestamp:= v_loop_time::TIMESTAMP;
+						RAISE NOTICE 'Time date  %',v_loop_time;
+						
 										
-										insert into dev.fx_rate_hourly(currency_id,usdrate,capturedate,provider,created_date_id,capturehour_id,ctrl_last_update_ts)
-										select p_currency_id, --currency_id
-										edw_dim.uf_get_usd_rate_for_currency(v_loop_time_timestamp::timestamp,p_currency_id),--usdrate
-										v_loop_time_timestamp, --capturedate
-										'ext01_external_fx_rate_t', --provider
-										to_char(v_loop_time_timestamp, 'YYYYMMDD')::int4, --created_date_id
-										v_loop_count, --capturehour_id
-										now()::timestamp; --ctrl_last_update_ts
+						insert into dev.fx_rate_hourly(currency_id,usdrate,capturedate,provider,created_date_id,capturehour_id,ctrl_last_update_ts)
+						select p_currency_id, --currency_id
+						edw_dim.uf_get_usd_rate_for_currency(v_loop_time_timestamp::timestamp,p_currency_id),--usdrate
+						v_loop_time_timestamp, --capturedate
+						'ext01_external_fx_rate_t', --provider
+						to_char(v_loop_time_timestamp, 'YYYYMMDD')::int4, --created_date_id
+						v_loop_hour, --capturehour_id
+						now()::timestamp; --ctrl_last_update_ts
 									
-										v_loop_count := v_loop_count + 1;
-										
-										if v_loop_count >20
-										then 
-										v_t02:=  CURRENT_TIMESTAMP;
-										v_t02:= v_t01::timestamp;
-				               			v_time_run:= DATE_PART('second', v_t02 - v_t01)*;	
-				               			RAISE NOTICE 'time run: %',v_time_run;
-										return;
+						v_loop_hour := v_loop_hour + 1;
+						v_max_fx_hourly:= v_loop_time_timestamp;
+						if v_loop_hour >30
+						then 
+							v_t02:=  CURRENT_TIMESTAMP;
+							v_t02:= v_t01::timestamp;
+				        	v_time_run:= DATE_PART('second', v_t02 - v_t01);	
+				        	RAISE NOTICE 'time run: %',v_time_run;
+				        	RAISE NOTICE 'hour: %',v_loop_hour;
+							return;
 									
-										end if;
+						end if;
 										
-										RAISE NOTICE 'hour: %',v_loop_count;
+						
 										
                							--v_time_run:= DATE_PART('second', v_t02 - v_t01);
               							--RAISE NOTICE 'time run: %',v_time_run;
-								end loop;
+					end loop;
 				
 								
 				end if;
