@@ -91,7 +91,7 @@ AS $procedure$
 					
 						RAISE NOTICE 'fx_hourly max date %',v_max_fx_hourly_cur;
 						
-						while v_max_fx_hourly_cur < '2018-01-02 00:00:00' 
+						--while v_max_fx_hourly_cur < '2018-01-02 00:00:00' 
 						
 						loop
 							-- v_loop_time:= to_char(v_max_fx_hourly_cur, 'YYYY-MM-DD')||  make_time(v_loop_hour,0,0);
@@ -118,11 +118,11 @@ AS $procedure$
 							v_max_fx_hourly_cur:= v_loop_time_timestamp;
 							
 							RAISE NOTICE 'currency insert: %',v_currency_id;
-				            --if v_max_fx_hourly_cur >= '2018-01-03 00:00:00' 
-							--then 
-							--	i:=i+1;
-							--	return;			
-							--end if;
+				            if v_max_fx_hourly_cur >= '2018-01-02 00:00:00' 
+							then 
+								i:=i+1;
+								return;			
+							end if;
 				              	
 						end loop;
 						
@@ -136,7 +136,7 @@ AS $procedure$
 				RAISE NOTICE 'time run: %',v_time_run;
 				
 				--end loop;
-				
+				return;
 				
 				
 				
