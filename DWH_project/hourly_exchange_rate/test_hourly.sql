@@ -49,6 +49,7 @@ AS $procedure$
               	if v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
               	then
               		RAISE NOTICE 'Time smallest  %',v_max_fx_hourly;
+              		RAISE NOTICE 'Batch inserted to hold table %';
               	end if;
               	
               	if v_max_fx_hourly <= (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
