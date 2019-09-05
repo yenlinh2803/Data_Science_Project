@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE dev.usp_test_fxrate_hourly(p_currency_id smallint)
+CREATE OR REPLACE PROCEDURE dev.usp_test_fxrate_hourly()
  LANGUAGE plpgsql
  SECURITY DEFINER
 AS $procedure$
@@ -14,17 +14,14 @@ AS $procedure$
 			v_loop_time_timestamp		TIMESTAMP WITHOUT time zone;
            	v_t01						TIMESTAMP WITHOUT time zone;
            	v_t02						TIMESTAMP WITHOUT time zone;
-           	v_minmax_fx_hourly				TIMESTAMP WITHOUT time zone;
-           	v_max_time_cur			TIMESTAMP WITHOUT time zone;
+           	v_minmax_fx_hourly			TIMESTAMP WITHOUT time zone;
+           	v_max_fx_hourly				TIMESTAMP WITHOUT time zone;
+           	v_max_time_cur				TIMESTAMP WITHOUT time zone;
            	v_cer_max_dt				TIMESTAMP WITHOUT time zone;
            	v_mpd_max_dt				TIMESTAMP WITHOUT time zone;
            	v_ext_fx_dt					TIMESTAMP WITHOUT time zone;
            	v_time_run					int4;
            
-           	-- CONST
-			--c_DES_OBJCODE varchar(10):='EXTPR01';
-			--c_SRC_OBJCODE varchar(10):='EXT01';
-			--c_FLOW varchar(150):='usp_load_fact_ext01_external_fx_rate';
 		
 		BEGIN
 				v_t01:= CURRENT_TIMESTAMP;
@@ -32,15 +29,13 @@ AS $procedure$
 				
 				
 				
-				select array(SELECT distinct id FROM edw_dim.cur01_currency_t) into v_currency_array;
+				select array(SELECT distinct id FROM edw_dim.cur01_currency_t limit 3) into v_currency_array;
 				RAISE NOTICE 'array %',v_currency_array;
-
 				
-				/*	
-				SELECT max(capturedate) INTO v_minmax_fx_hourly 
+				SELECT max(capturedate) INTO v_max_fx_hourly 
 				FROM dev.fx_rate_hourly;
 				
-				*/
+			
 				SELECT min(max_capture_date) INTO v_minmax_fx_hourly 
 				FROM 
 				(
@@ -61,20 +56,20 @@ AS $procedure$
 	            SELECT MAX(capturedate)+ (5 * INTERVAL '1 minute') INTO v_ext_fx_dt
 	            FROM edw_fact.ext01_external_fx_rate_t ext; --max created from external_fix
 	                
-	            RAISE NOTICE 'Time smallest of max fx_hourly %',v_minmax_fx_hourly;
+	            RAISE NOTICE 'Time smallest of max fx_hourly %',v_max_fx_hourly;
+	           	RAISE NOTICE 'fx_hourly max %',v_minmax_fx_hourly;
 				RAISE NOTICE 'CER max date %',v_cer_max_dt;
 	    		RAISE NOTICE 'MPD max date %',v_mpd_max_dt;
 	   			RAISE NOTICE 'Ext max date %',v_ext_fx_dt;
 	   	
 	            if v_minmax_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
 	            then
-	           		RAISE NOTICE 'Full updated %';
-	            	--RAISE NOTICE 'Time smallest of max fx_hourly %',v_minmax_fx_hourly;
+	           		--RAISE NOTICE 'Full updated %';
+	            	RAISE NOTICE 'Time smallest of max fx_hourly %',v_minmax_fx_hourly;
 	              	--RAISE NOTICE 'Batch inserted to hold table %';
 	            end if;
 	              	
 	            if v_minmax_fx_hourly <= (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
-	            --if v_minmax_fx_hourly <= '2018-01-01 00:00:00' 
 	           	then
 	              	RAISE NOTICE 'Time smallest currency %',v_minmax_fx_hourly;
 	              	
@@ -94,9 +89,8 @@ AS $procedure$
 							v_max_time_cur:= '2018-01-01 00:00:00'::timestamp;
 						end if;
 					
-						RAISE NOTICE 'fx_hourly max date %',v_max_time_cur;
+						RAISE NOTICE 'fx_hourly max date of currency %',v_max_time_cur;
 						
-						--while v_max_time_cur < '2018-01-02 00:00:00' 
 						
 						loop
 							-- v_loop_time:= to_char(v_max_time_cur, 'YYYY-MM-DD')||  make_time(v_loop_hour,0,0);
@@ -123,8 +117,8 @@ AS $procedure$
 							v_max_time_cur:= v_loop_time_timestamp;
 							
 							RAISE NOTICE 'currency insert: %',v_currency_id;
-				        	EXIT when v_max_time_cur >= '2018-01-02 00:00:00';
-				        	--EXIT when v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
+				        	--EXIT when v_max_time_cur >= '2018-01-11 00:00:00';
+				        	EXIT when v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
 						end loop;
 						
 						RAISE NOTICE 'i after end while: %',i;
@@ -142,4 +136,4 @@ AS $procedure$
             END 
      $procedure$
 ;
-call dev.usp_test_fxrate_hourly(20::smallint);
+call dev.usp_test_fxrate_hourly();
