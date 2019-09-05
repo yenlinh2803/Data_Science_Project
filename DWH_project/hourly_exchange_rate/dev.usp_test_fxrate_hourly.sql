@@ -29,7 +29,7 @@ AS $procedure$
 				
 				
 				
-				select array(SELECT distinct id FROM edw_dim.cur01_currency_t limit 3) into v_currency_array;
+				select array(SELECT distinct id FROM edw_dim.cur01_currency_t) into v_currency_array;
 				RAISE NOTICE 'array %',v_currency_array;
 				
 				SELECT max(capturedate) INTO v_max_fx_hourly 
@@ -56,8 +56,8 @@ AS $procedure$
 	            SELECT MAX(capturedate)+ (5 * INTERVAL '1 minute') INTO v_ext_fx_dt
 	            FROM edw_fact.ext01_external_fx_rate_t ext; --max created from external_fix
 	                
-	            RAISE NOTICE 'Time smallest of max fx_hourly %',v_max_fx_hourly;
-	           	RAISE NOTICE 'fx_hourly max %',v_minmax_fx_hourly;
+	            RAISE NOTICE 'Time smallest of max fx_hourly %',v_minmax_fx_hourly;
+	           	RAISE NOTICE 'fx_hourly max %',v_max_fx_hourly;
 				RAISE NOTICE 'CER max date %',v_cer_max_dt;
 	    		RAISE NOTICE 'MPD max date %',v_mpd_max_dt;
 	   			RAISE NOTICE 'Ext max date %',v_ext_fx_dt;
@@ -117,11 +117,11 @@ AS $procedure$
 							v_max_time_cur:= v_loop_time_timestamp;
 							
 							RAISE NOTICE 'currency insert: %',v_currency_id;
-				        	--EXIT when v_max_time_cur >= '2018-01-11 00:00:00';
-				        	EXIT when v_max_fx_hourly > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt))
+				        	--EXIT when v_max_time_cur >= '2018-01-05 00:00:00';
+				        	EXIT when v_max_time_cur > (select least(v_cer_max_dt,v_mpd_max_dt,v_ext_fx_dt));
 						end loop;
 						
-						RAISE NOTICE 'i after end while: %',i;
+						RAISE NOTICE 'i after end loop time: %',i;
 					end loop;
 									
 				end if;
@@ -130,7 +130,6 @@ AS $procedure$
 				v_time_run:= EXTRACT(EPOCH FROM (v_t02 - v_t01));
 				RAISE NOTICE 'time run: %',v_time_run;
 				
-				--end loop;
 				return;
 	                
             END 
