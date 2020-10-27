@@ -1,0 +1,52 @@
+Tu Tran (will)
+
+Microsoft
+ERP:
+migrate data từ các nền tảng
+làm pipeline dùng sẵn Azure cloud
+chỉ thao tác trên nền tảng họ có sẵn, ko được động đến source code.
+project nhỏ:
+- Dashboard: khách hàng Microsoft.
+- Viết API trên flask
+
+###################################
+Audience Serv (cty Marketing Đức)
+Cty cung cấp chiến lược marketing cho các retail.
+họ có rất nhiều data mua từ 3rd party, có nguồn tự xây dựng.
+Cty đó tập trung vào email Marketing.
+- Data pipeline, ETL
+- Customer segmentation
+- Dùng vài model retrain sẵn của Đức, chứa sắc thái
+
+Project(Audience Serv): Dự đoán ng dùng bằng tên, birthday, gioi tinh
+Tên: encode -> điểm vector
+Dùng Keras
+Accuracy: 70%
+
+Data Scientist: 1 người trong team
+#################################
+Việc outsource:
+- Mô hình chấm điểm tín dụng với Fe- Credit:
+	model: Random Forest
+	70% thời gian : tổng hợp data, chọn feature
+	Database: dùng SQL 
+	Problem: imbalance 
+	--> Accuracy ~ 70%
+	dùng Gini score 
+- data pipeline: support Oracle
+######################################
+Recommended System using Netfilx:
+data: user thích bộ phim nào, thoi gian xem bộ phim, phim thuộc thể loại nào.
+Kiểu: 
+1. Theo user relationship (ten, tuổi, giới tính, địa điểm)
+Data: tìm trên Kaggle, mã hoá, các nền tảng tương tự Netfilx (dataset tương tự)
+Model: dạng ma trận tính điểm từng trường (ko hẳn là ML)
+
+#################################
+Thích làm trong Fintech.
+
+#######################################
+Suggest model cho Baemin:
+- Tối ưu khoảng đường đi--> Suggest Saleman Traveling Problem
+- Gợi ý nội dung
+- Đánh giá tài xế, nhà hàng.

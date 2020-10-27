@@ -1,0 +1,46 @@
+Le Duc Dung:
+
+Đang làm ở Trusting Social: 
+Đang làm trong team chấm điểm tín dụng khách hàng: làm dc 3 project
+
+Pr2: data fb:
+60tr users VN, craw tren mang cham diem tin dung. 
+Chấm điểm từ các cty di động, muốn su dung them tin dung fb.
+Data ko duoc tot lam, co value.
+Third party crawl, sau đó chuyen qua tu làm.
+Đa số dùng XGBoost.
+Final se dung XGBoost để có performance cao.
+
+Project nhỏ team tự làm:
+Predict những ng thất nghiệp do covid.
+Acc: 70%
+Model: XGBoost.
+--> Improve: chưa có cách improve do qua project khác
+
+Tự làm: churn score: 
+lable user ko còn active nữa thì churn.
+Acc: ~90%
+
+Data Telco: tính feature là xem location nào quan trọng nhất.
+Tính điểm khu vực giàu nghèo. 
+
+Maintain: Feature, Score của model.
+
+Bạn ko fai build model từ đầu mà là người maintain và tìm cách improve.
+Cách improve: 
+1. Data hiện tại so voi qua khứ thay đổi nhiều ko
+2. Có lấy dc label tốt hơn ko.
+3. Train feature mới để adapt data mới.
+
+
+Chưa có ý định nghỉ.
+Có hứng thú start up, dự định dùng kiến thức để apply vào cty.
+
+Ý tưởng apply cho Baemin : dùng location, email,, so dt của user để xem user đó hạng bao nhiêu
+
+Salary: 1500 net. 
+
+
+
+
+

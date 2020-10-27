@@ -1,0 +1,85 @@
+Khoa hoc tu nhien
+
+chuyen ngành khoa hoc may tinh, khoa hoc du lieu
+
+Zalo :
+dự đoán tuổi tác giới tính:
+dự đoán user nặc danh, dự đoán nam hay nữ, tuổi bao nhiêu
+từ 7/2019 đến 9/2020
+input: 
+	4 nguòi, mỗi ng 1 platform: Zing, baomoi, mp3, link ng dùng bam vào
+Log: thời gian làm hành động đó, click, share, like
+Data engineer sẽ xử lý data thô tạo ra log cho bạn
+feature cơ bản:
+	đếm, thống ke co ban
+	hanh dong nào nhieu: share
+feature fuc tao:
+	lable encoding
+	nhúng
+	deep learning
+	dựa vào bài báo họ đọc nam nhiều hay nữ nhiều
+distribution shift:
+	identified
+	anonymous: làm chính vì chua biet thong tin gi ca
+		LightGBM
+đánh giá:
+	AUC
+	Sếp đặt ra 0.7 nhưng model chi 0.65
+	Do phan phoi ko chuan:
+	BSI: chon p tính metric
+	Ditributenator: --> 0.8 AUC cũng khá cao
+
+	Tạo tập mới để convert:
+	combine identified và anonymous
+
+Đưa lên production:
+	setup python environment và dùng spark
+
+Test tren production:
+	
+
+Project CTR cũng dùng nhung metric giong project trên  
+
+
+DE Unilever:
+	data họ có nhiều nguồn ko thống nhất
+	Họ muốn monitor lượng stock.
+	Tổng hợp thông tin từ nhiều nguồn và thống nhất thành 1 format
+	Transform từ các file excel thành nguồn cụ thể
+	Làm chung với 1 bạn Data Scientist bên đó
+
+JVN Hackathon:
+	xử lý du lieu van ban
+	extract 100 bài báo thành topic chung
+	loc ra top 3 topic
+	
+
+Recommendation zalo shop:
+	có lich su user
+	muốn đánh giá: tỷ lệ impression/click, click
+	tăng impressiuon, click, click/buy
+	dùng model:
+	ALS
+	tạo metric:
+	user và sản phẩm -> extract 2 vector: user, sản phẩm
+	recommend ban đầu: san phẩm nào đặt nhiều thì recommend
+	problem: order brushing 
+	AB test liên tục:
+		chia thành 3 tập
+		xem tỷ lệ có giong nhau ko
+	Đợt đó accuracy ko ổn. Zalo shop cũng ko muốn tiếp tục.
+
+
+Chattbot:
+	Thử apply graph database được ko ?
+	Model: regress
+	Tạo ra tất cả testcase cách chào hỏi: hỏi / trả lời gì 
+
+Photo Reminder:
+	detect human, detect face
+	4 model
+
+Đã xin nghỉ nên 1 tháng nữa
+25 net 
+
+

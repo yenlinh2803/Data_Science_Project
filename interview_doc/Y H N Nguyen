@@ -1,0 +1,42 @@
+Quá trình:
+
+
+Refinitv:
+deploy model: text chinese language.
+có microservice kiếm các tên người trong text. 
+
+
+Trusting Social: chưa địng vào du lieu thiet.
+
+
+Be: 
+1. KYC. 
+Mục đích predict có fai office booker.
+Dựa vào 3rd party cung cấp data.
+Acc gioi tính 70%, tuổi thấp hơn.
+Đưa feature là vector số đưa vào mô hình
+
+
+2. segment: Kmeans, Scaler. 
+
+3. Churn prediction
+
+4. NLP.
+
+Team Data Scientist Be: gom 3 ng.
+
+Chưa làm Recommendation.
+Be dùng google Bigquery.
+
+
+Mức luong mong muốn: 4000k
+1 tháng.
+
+
+
+
+
+
+
+
+
